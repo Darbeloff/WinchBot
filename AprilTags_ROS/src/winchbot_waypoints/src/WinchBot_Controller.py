@@ -695,6 +695,7 @@ def pickup():
 
 if __name__ == '__main__':
 	global qi
+	print("Running WinchBot_Controller")
 # Find a connected ODrive (this will block until you connect one)
 	print("finding an odrive...")
 	odrv0 = odrive.find_any(serial_number="2061377C3548")
