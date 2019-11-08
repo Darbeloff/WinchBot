@@ -1,0 +1,6 @@
+<launch>
+	<include file ="$(find freenect_launch)/launch/freenect.launch"/>
+	<include file ="$(find apriltag_ros)/launch/continuous_detection.launch"/>
+	<node name="Winchbot_Controller" pkg="winchbot_waypoints" type="WinchBot_Controller.py" output="screen" launch-prefix="xterm -fa monaco -fs 18 -e"/> 
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find winchbot_waypoints)/src/rviz/Kinect.rviz"/>
+</launch>
