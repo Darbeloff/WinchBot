@@ -1,0 +1,5 @@
+winchbot_waypoints
+/home/cormac/Winchbot_demo/AprilTags_ROS/devel/.private/winchbot_waypoints/cmake.lock /home/cormac/Winchbot_demo/AprilTags_ROS/devel/./cmake.lock
+/home/cormac/Winchbot_demo/AprilTags_ROS/devel/.private/winchbot_waypoints/share/winchbot_waypoints/cmake/winchbot_waypointsConfig.cmake /home/cormac/Winchbot_demo/AprilTags_ROS/devel/share/winchbot_waypoints/cmake/winchbot_waypointsConfig.cmake
+/home/cormac/Winchbot_demo/AprilTags_ROS/devel/.private/winchbot_waypoints/share/winchbot_waypoints/cmake/winchbot_waypointsConfig-version.cmake /home/cormac/Winchbot_demo/AprilTags_ROS/devel/share/winchbot_waypoints/cmake/winchbot_waypointsConfig-version.cmake
+/home/cormac/Winchbot_demo/AprilTags_ROS/devel/.private/winchbot_waypoints/lib/pkgconfig/winchbot_waypoints.pc /home/cormac/Winchbot_demo/AprilTags_ROS/devel/lib/pkgconfig/winchbot_waypoints.pc
