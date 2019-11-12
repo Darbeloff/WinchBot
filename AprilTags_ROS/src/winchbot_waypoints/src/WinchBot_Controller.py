@@ -96,6 +96,7 @@ def odrive_move(drive,axis,delta):
 		#print(drive.axis1.encoder.pos_estimate)
 
 def winchbot_IK(winches,platform):
+	# Does not consider orientation of the platform and assumes that it is parallel to the ground plane.
 	q = [0,0,0]
 	N0 = platform[0]
 	N1 = platform[1]
@@ -291,9 +292,12 @@ def tumble():
 	winch0 = winches[0]
 	winch1 = winches[1]
 	winch2 = winches[2]
-	qi[0] = math.sqrt((N0 - winch0[0])**2 + (N1-(winch0[1]+0.4531))**2 + (N2-winch0[2])**2)
-	qi[1] = math.sqrt((N0 - (winch1[0]-0.866))**2 + (N1-(winch1[1]-0.5))**2 + (N2-winch1[2])**2)
-	qi[2] = math.sqrt((N0 - (winch2[0]+0.866))**2 + (N1-(winch2[1]-0.5))**2 + (N2-winch2[2])**2)
+	winch0_offset = np.array((qv.mult(tuple(effector_rot),(0,0.4531),0)))
+	winch1_offset = np.array((qv.mult(tuple(effector_rot),(-0.866,-0.5,0),0)))
+	winch2_offset = np.array((qv.mult(tuple(effector_rot),(0.866,-0.5,0),0)))
+	qi[0] = math.sqrt((N0 - (winch0[0]+winch0_offset[0]))**2 + (N1-(winch0[1]+winch0_offset[1]))**2 + (N2-(winch0[2]-winch0_offset[2]))**2)
+	qi[1] = math.sqrt((N0 - (winch1[0]+winch1_offset[0]))**2 + (N1-(winch1[1]+winch1_offset[1]))**2 + (N2-(winch1[2]+winch1_offset[2]))**2)
+	qi[2] = math.sqrt((N0 - (winch2[0]+winch2_offset[0]))**2 + (N1-(winch2[1]+winch2_offset[1]))**2 + (N2-(winch2[2]+winch2_offset[2]))**2)
 	#qi=[39,38,35] #For testing
 	#pub = rospy.Publisher('position', Vector3,queue_size=10) # Vector3 is not defined
 	rate = rospy.Rate(10) # 10Hz
@@ -473,9 +477,12 @@ def pickup():
 	winch0 = winches[0]
 	winch1 = winches[1]
 	winch2 = winches[2]
-	qi[0] = math.sqrt((N0 - winch0[0])**2 + (N1-(winch0[1]+0.4531))**2 + (N2-winch0[2])**2)
-	qi[1] = math.sqrt((N0 - (winch1[0]-0.866))**2 + (N1-(winch1[1]-0.5))**2 + (N2-winch1[2])**2)
-	qi[2] = math.sqrt((N0 - (winch2[0]+0.866))**2 + (N1-(winch2[1]-0.5))**2 + (N2-winch2[2])**2)
+	winch0_offset = np.array((qv.mult(tuple(effector_rot),(0,0.4531),0)))
+	winch1_offset = np.array((qv.mult(tuple(effector_rot),(-0.866,-0.5,0),0)))
+	winch2_offset = np.array((qv.mult(tuple(effector_rot),(0.866,-0.5,0),0)))
+	qi[0] = math.sqrt((N0 - (winch0[0]+winch0_offset[0]))**2 + (N1-(winch0[1]+winch0_offset[1]))**2 + (N2-(winch0[2]-winch0_offset[2]))**2)
+	qi[1] = math.sqrt((N0 - (winch1[0]+winch1_offset[0]))**2 + (N1-(winch1[1]+winch1_offset[1]))**2 + (N2-(winch1[2]+winch1_offset[2]))**2)
+	qi[2] = math.sqrt((N0 - (winch2[0]+winch2_offset[0]))**2 + (N1-(winch2[1]+winch2_offset[1]))**2 + (N2-(winch2[2]+winch2_offset[2]))**2)
 	#qi=[39,38,35] #For testing
 	#pub = rospy.Publisher('position', Vector3,queue_size=10) # Vector3 is not defined
 	rate = rospy.Rate(10) # 10Hz
@@ -582,9 +589,12 @@ def pickup():
 				winch0 = winches[0]
 				winch1 = winches[1]
 				winch2 = winches[2]
-				qi[0] = math.sqrt((N0 - winch0[0])**2 + (N1-(winch0[1]+0.4531))**2 + (N2-winch0[2])**2)
-				qi[1] = math.sqrt((N0 - (winch1[0]-0.866))**2 + (N1-(winch1[1]-0.5))**2 + (N2-winch1[2])**2)
-				qi[2] = math.sqrt((N0 - (winch2[0]+0.866))**2 + (N1-(winch2[1]-0.5))**2 + (N2-winch2[2])**2)
+				winch0_offset = np.array((qv.mult(tuple(effector_rot),(0,0.4531),0)))
+				winch1_offset = np.array((qv.mult(tuple(effector_rot),(-0.866,-0.5,0),0)))
+				winch2_offset = np.array((qv.mult(tuple(effector_rot),(0.866,-0.5,0),0)))
+				qi[0] = math.sqrt((N0 - (winch0[0]+winch0_offset[0]))**2 + (N1-(winch0[1]+winch0_offset[1]))**2 + (N2-(winch0[2]-winch0_offset[2]))**2)
+				qi[1] = math.sqrt((N0 - (winch1[0]+winch1_offset[0]))**2 + (N1-(winch1[1]+winch1_offset[1]))**2 + (N2-(winch1[2]+winch1_offset[2]))**2)
+				qi[2] = math.sqrt((N0 - (winch2[0]+winch2_offset[0]))**2 + (N1-(winch2[1]+winch2_offset[1]))**2 + (N2-(winch2[2]+winch2_offset[2]))**2)
 
 				#target = [platform[0]+hook_offset[0],platform[1]+hook_offset[1],goal_pos[2]+z_offset]
 				#target = [goal_pos_temp[0]+x_offset+hook_offset[0],goal_pos_temp[1]+y_offset+hook_offset[1],goal_pos_temp[2]+z_offset]
@@ -773,10 +783,15 @@ if __name__ == '__main__':
 	winch0 = winches[0]
 	winch1 = winches[1]
 	winch2 = winches[2]
-	qi[0] = math.sqrt((N0 - winch0[0])**2 + (N1-(winch0[1]+0.4531))**2 + (N2-winch0[2])**2)
-	qi[1] = math.sqrt((N0 - (winch1[0]-0.866))**2 + (N1-(winch1[1]-0.5))**2 + (N2-winch1[2])**2)
-	qi[2] = math.sqrt((N0 - (winch2[0]+0.866))**2 + (N1-(winch2[1]-0.5))**2 + (N2-winch2[2])**2)
-	#qi=[39,38,35] #For testing
+	winch0_offset = np.array((qv.mult(tuple(effector_rot),(0,0.4531),0)))
+	winch1_offset = np.array((qv.mult(tuple(effector_rot),(-0.866,-0.5,0),0)))
+	winch2_offset = np.array((qv.mult(tuple(effector_rot),(0.866,-0.5,0),0)))
+	qi[0] = math.sqrt((N0 - (winch0[0]+winch0_offset[0]))**2 + (N1-(winch0[1]+winch0_offset[1]))**2 + (N2-(winch0[2]-winch0_offset[2]))**2)
+	qi[1] = math.sqrt((N0 - (winch1[0]+winch1_offset[0]))**2 + (N1-(winch1[1]+winch1_offset[1]))**2 + (N2-(winch1[2]+winch1_offset[2]))**2)
+	qi[2] = math.sqrt((N0 - (winch2[0]+winch2_offset[0]))**2 + (N1-(winch2[1]+winch2_offset[1]))**2 + (N2-(winch2[2]+winch2_offset[2]))**2)
+	#qi[0] = math.sqrt((N0 - winch0[0])**2 + (N1-(winch0[1]+0.4531))**2 + (N2-winch0[2])**2)
+	#qi[1] = math.sqrt((N0 - (winch1[0]-0.866))**2 + (N1-(winch1[1]-0.5))**2 + (N2-winch1[2])**2)
+	#qi[2] = math.sqrt((N0 - (winch2[0]+0.866))**2 + (N1-(winch2[1]-0.5))**2 + (N2-winch2[2])**2)
 	#pub = rospy.Publisher('position', Vector3,queue_size=10) # Vector3 is not defined
 	rate = rospy.Rate(10) # 10Hz
 	goal_reached = 0
