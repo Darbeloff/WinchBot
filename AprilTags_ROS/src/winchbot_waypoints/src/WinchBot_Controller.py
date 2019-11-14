@@ -104,9 +104,9 @@ def winchbot_IK(winches,platform):
 	winch0 = winches[0]
 	winch1 = winches[1]
 	winch2 = winches[2]
-	q[0] = math.sqrt((N0 - winch0[0])**2 + (N1-(winch0[1]+0.4531))**2 + (N2-winch0[2])**2)
-	q[1] = math.sqrt((N0 - (winch1[0]-0.866))**2 + (N1-(winch1[1]-0.5))**2 + (N2-winch1[2])**2)
-	q[2] = math.sqrt((N0 - (winch2[0]+0.866))**2 + (N1-(winch2[1]-0.5))**2 + (N2-winch2[2])**2)
+	q[0] = math.sqrt((N0 - winch0[0])**2 + (N1-winch0[1]+1)**2 + (N2-winch0[2])**2)
+	q[1] = math.sqrt((N0 - winch1[0]-0.866)**2 + (N1-winch1[1]-0.5)**2 + (N2-winch1[2])**2)
+	q[2] = math.sqrt((N0 - winch2[0]+0.866)**2 + (N1-winch2[1]-0.5)**2 + (N2-winch2[2])**2)
 	return q
 
 def figureeight():
@@ -292,12 +292,12 @@ def tumble():
 	winch0 = winches[0]
 	winch1 = winches[1]
 	winch2 = winches[2]
-	winch0_offset = np.array((qv.mult(tuple(effector_rot),(0,0.4531),0)))
-	winch1_offset = np.array((qv.mult(tuple(effector_rot),(-0.866,-0.5,0),0)))
-	winch2_offset = np.array((qv.mult(tuple(effector_rot),(0.866,-0.5,0),0)))
-	qi[0] = math.sqrt((N0 - (winch0[0]+winch0_offset[0]))**2 + (N1-(winch0[1]+winch0_offset[1]))**2 + (N2-(winch0[2]-winch0_offset[2]))**2)
-	qi[1] = math.sqrt((N0 - (winch1[0]+winch1_offset[0]))**2 + (N1-(winch1[1]+winch1_offset[1]))**2 + (N2-(winch1[2]+winch1_offset[2]))**2)
-	qi[2] = math.sqrt((N0 - (winch2[0]+winch2_offset[0]))**2 + (N1-(winch2[1]+winch2_offset[1]))**2 + (N2-(winch2[2]+winch2_offset[2]))**2)
+	winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
+	winch1_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
+	winch2_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+	qi[0] = math.sqrt((N0 - winch0[0]+winch0_offset[0])**2 + (N1-winch0[1]+winch0_offset[1])**2 + (N2-winch0[2]-winch0_offset[2])**2)
+	qi[1] = math.sqrt((N0 - winch1[0]+winch1_offset[0])**2 + (N1-winch1[1]+winch1_offset[1])**2 + (N2-winch1[2]+winch1_offset[2])**2)
+	qi[2] = math.sqrt((N0 - winch2[0]+winch2_offset[0])**2 + (N1-winch2[1]+winch2_offset[1])**2 + (N2-winch2[2]+winch2_offset[2])**2)
 	#qi=[39,38,35] #For testing
 	#pub = rospy.Publisher('position', Vector3,queue_size=10) # Vector3 is not defined
 	rate = rospy.Rate(10) # 10Hz
@@ -477,12 +477,12 @@ def pickup():
 	winch0 = winches[0]
 	winch1 = winches[1]
 	winch2 = winches[2]
-	winch0_offset = np.array((qv.mult(tuple(effector_rot),(0,0.4531),0)))
-	winch1_offset = np.array((qv.mult(tuple(effector_rot),(-0.866,-0.5,0),0)))
-	winch2_offset = np.array((qv.mult(tuple(effector_rot),(0.866,-0.5,0),0)))
-	qi[0] = math.sqrt((N0 - (winch0[0]+winch0_offset[0]))**2 + (N1-(winch0[1]+winch0_offset[1]))**2 + (N2-(winch0[2]-winch0_offset[2]))**2)
-	qi[1] = math.sqrt((N0 - (winch1[0]+winch1_offset[0]))**2 + (N1-(winch1[1]+winch1_offset[1]))**2 + (N2-(winch1[2]+winch1_offset[2]))**2)
-	qi[2] = math.sqrt((N0 - (winch2[0]+winch2_offset[0]))**2 + (N1-(winch2[1]+winch2_offset[1]))**2 + (N2-(winch2[2]+winch2_offset[2]))**2)
+	winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
+	winch1_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
+	winch2_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+	qi[0] = math.sqrt((N0 - winch0[0]+winch0_offset[0])**2 + (N1-winch0[1]+winch0_offset[1])**2 + (N2-winch0[2]-winch0_offset[2])**2)
+	qi[1] = math.sqrt((N0 - winch1[0]+winch1_offset[0])**2 + (N1-winch1[1]+winch1_offset[1])**2 + (N2-winch1[2]+winch1_offset[2])**2)
+	qi[2] = math.sqrt((N0 - winch2[0]+winch2_offset[0])**2 + (N1-winch2[1]+winch2_offset[1])**2 + (N2-winch2[2]+winch2_offset[2])**2)
 	#qi=[39,38,35] #For testing
 	#pub = rospy.Publisher('position', Vector3,queue_size=10) # Vector3 is not defined
 	rate = rospy.Rate(10) # 10Hz
@@ -491,12 +491,12 @@ def pickup():
 	e_resolution = 400000 # Number of encoder counts in 1 revolution
 	drum_diam = 4.125 # Drum diameter in inches
 	safe_z = 35 # safe Z coordinate for translation over the object
-	x_offset = 0
-	y_offset = -4.5
+	x_offset = 0.25 # additional offset in x direction
+	y_offset = -4.5 # offset in y direction between target hook centre and initial y location while aligning x.
 	#y_offset2 = 0.5
-	y_offset2 = 0
-	#z_offset = -3.5
-	z_offset = -4.5
+	y_offset2 = 4.5 # undoes the affect of y_offset and moves effector hook under target hook
+	z_offset = -3.5
+	#z_offset = -4.5
 	while goal_reached==0:
 		#pub.publish(pos)
 		if stage == 0:
@@ -559,14 +559,14 @@ def pickup():
 				print('Cannot find end effector, please reposition.')
 				break
 			else:
-				print('hook_centre:')
+				print('Current Hook Centre:')
 				print(hook_centre)
 				calibration = np.array([end_effector[0]*39.3701,end_effector[1]*39.3701,end_effector[2]*39.3701]) # Calibration AprilTag pos relative to Camera
 				hook_cam = calibration + hook_centre # Platform centre pos relative to Camera
 				hook_offset = [goal_pos[0]+x_offset-hook_cam[0],goal_pos[1]+y_offset-hook_cam[1], goal_pos[2]+z_offset-(hook_cam[2]-6)]
-				print('hook_offset:')
+				print('Current Hook Location Error:')
 				print(hook_offset)
-				if abs(hook_offset[0])>1:
+				if abs(hook_offset[0])>0.4:
 					increment = 2
 					#hook_offset = [hook_offset[0],hook_offset[1]]
 					#print('hook_offset:')
@@ -589,20 +589,21 @@ def pickup():
 				winch0 = winches[0]
 				winch1 = winches[1]
 				winch2 = winches[2]
-				winch0_offset = np.array((qv.mult(tuple(effector_rot),(0,0.4531),0)))
-				winch1_offset = np.array((qv.mult(tuple(effector_rot),(-0.866,-0.5,0),0)))
-				winch2_offset = np.array((qv.mult(tuple(effector_rot),(0.866,-0.5,0),0)))
-				qi[0] = math.sqrt((N0 - (winch0[0]+winch0_offset[0]))**2 + (N1-(winch0[1]+winch0_offset[1]))**2 + (N2-(winch0[2]-winch0_offset[2]))**2)
-				qi[1] = math.sqrt((N0 - (winch1[0]+winch1_offset[0]))**2 + (N1-(winch1[1]+winch1_offset[1]))**2 + (N2-(winch1[2]+winch1_offset[2]))**2)
-				qi[2] = math.sqrt((N0 - (winch2[0]+winch2_offset[0]))**2 + (N1-(winch2[1]+winch2_offset[1]))**2 + (N2-(winch2[2]+winch2_offset[2]))**2)
+				winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
+				winch1_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
+				winch2_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+				qi[0] = math.sqrt((N0 - winch0[0]+winch0_offset[0])**2 + (N1-winch0[1]+winch0_offset[1])**2 + (N2-winch0[2]-winch0_offset[2])**2)
+				qi[1] = math.sqrt((N0 - winch1[0]+winch1_offset[0])**2 + (N1-winch1[1]+winch1_offset[1])**2 + (N2-winch1[2]+winch1_offset[2])**2)
+				qi[2] = math.sqrt((N0 - winch2[0]+winch2_offset[0])**2 + (N1-winch2[1]+winch2_offset[1])**2 + (N2-winch2[2]+winch2_offset[2])**2)
 
 				#target = [platform[0]+hook_offset[0],platform[1]+hook_offset[1],goal_pos[2]+z_offset]
 				#target = [goal_pos_temp[0]+x_offset+hook_offset[0],goal_pos_temp[1]+y_offset+hook_offset[1],goal_pos_temp[2]+z_offset]
 				#goal_pos_temp = [goal_pos[0]-hook_centre[0],goal_pos[1]-hook_centre[1],goal_pos[2]-(hook_centre[2]-4)]
 				#goal_pos_temp = [goal_pos[0]-hook_centre[0],goal_pos[1]-hook_centre[1],goal_pos[2]-(hook_centre[2]-6)]
+				goal_pos_temp = [platform[0]+hook_offset[0],platform[1]+hook_offset[1],platform[2]+(hook_offset[2]-6)]
 				#goal_pos_temp = [goal_pos[0]+hook_centre[0],goal_pos[1]-hook_centre[1],goal_pos[2]-(hook_centre[2]-6)]
-				goal_pos_temp = [goal_pos_temp[0]-hook_centre[0],goal_pos_temp[1]-hook_centre[1],goal_pos_temp[2]-(hook_centre[2]-6)]
-				target = [goal_pos_temp[0]+x_offset,goal_pos_temp[1]+y_offset,goal_pos_temp[2]+z_offset]
+				#goal_pos_temp = [goal_pos_temp[0]-hook_centre[0],goal_pos_temp[1]-hook_centre[1],goal_pos_temp[2]-(hook_centre[2]-6)]
+				target = [goal_pos_temp[0],goal_pos_temp[1],goal_pos_temp[2]]
 				#goal_pos_temp = [goal_pos_temp[0]+hook_offset[0],goal_pos_temp[1]+hook_offset[1],goal_pos_temp[2]]
 				q = winchbot_IK(winches, target)
 				print('target=')
@@ -636,7 +637,7 @@ def pickup():
 		if stage == 3:
 			#target = [platform[0]+hook_offset[0],platform[1]+hook_offset[1]+y_offset2,goal_pos[2]+z_offset]
 			#target = [goal_pos[0]+x_offset+hook_offset[0],goal_pos[1]+y_offset2,goal_pos[2]+z_offset] # removed hook offset for y
-			target = [goal_pos_temp[0]+x_offset,goal_pos_temp[1]+y_offset2,goal_pos_temp[2]+z_offset]
+			target = [goal_pos_temp[0],goal_pos_temp[1]+y_offset2,goal_pos_temp[2]]
 			q = winchbot_IK(winches, target)
 			print('target=')
 			print(target)
@@ -783,12 +784,12 @@ if __name__ == '__main__':
 	winch0 = winches[0]
 	winch1 = winches[1]
 	winch2 = winches[2]
-	winch0_offset = np.array((qv.mult(tuple(effector_rot),(0,0.4531),0)))
-	winch1_offset = np.array((qv.mult(tuple(effector_rot),(-0.866,-0.5,0),0)))
-	winch2_offset = np.array((qv.mult(tuple(effector_rot),(0.866,-0.5,0),0)))
-	qi[0] = math.sqrt((N0 - (winch0[0]+winch0_offset[0]))**2 + (N1-(winch0[1]+winch0_offset[1]))**2 + (N2-(winch0[2]-winch0_offset[2]))**2)
-	qi[1] = math.sqrt((N0 - (winch1[0]+winch1_offset[0]))**2 + (N1-(winch1[1]+winch1_offset[1]))**2 + (N2-(winch1[2]+winch1_offset[2]))**2)
-	qi[2] = math.sqrt((N0 - (winch2[0]+winch2_offset[0]))**2 + (N1-(winch2[1]+winch2_offset[1]))**2 + (N2-(winch2[2]+winch2_offset[2]))**2)
+	winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
+	winch1_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
+	winch2_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+	qi[0] = math.sqrt((N0 - winch0[0]+winch0_offset[0])**2 + (N1-winch0[1]+winch0_offset[1])**2 + (N2-winch0[2]-winch0_offset[2])**2)
+	qi[1] = math.sqrt((N0 - winch1[0]+winch1_offset[0])**2 + (N1-winch1[1]+winch1_offset[1])**2 + (N2-winch1[2]+winch1_offset[2])**2)
+	qi[2] = math.sqrt((N0 - winch2[0]+winch2_offset[0])**2 + (N1-winch2[1]+winch2_offset[1])**2 + (N2-winch2[2]+winch2_offset[2])**2)
 	#qi[0] = math.sqrt((N0 - winch0[0])**2 + (N1-(winch0[1]+0.4531))**2 + (N2-winch0[2])**2)
 	#qi[1] = math.sqrt((N0 - (winch1[0]-0.866))**2 + (N1-(winch1[1]-0.5))**2 + (N2-winch1[2])**2)
 	#qi[2] = math.sqrt((N0 - (winch2[0]+0.866))**2 + (N1-(winch2[1]-0.5))**2 + (N2-winch2[2])**2)

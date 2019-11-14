@@ -16,6 +16,13 @@ from cv_bridge import CvBridge, CvBridgeError
 import geometry_msgs.msg
 
 # Quaternion Manipulation, source: https://stackoverflow.com/questions/4870393/rotating-coordinate-system-via-a-quaternion
+def normalize(v, tolerance=0.00001):
+    mag2 = sum(n * n for n in v)
+    if abs(mag2 - 1.0) > tolerance:
+        mag = math.sqrt(mag2)
+        v = tuple(n / mag for n in v)
+    return v
+
 def q_mult(q1, q2):
     w1, x1, y1, z1 = q1
     w2, x2, y2, z2 = q2
@@ -33,6 +40,20 @@ def qv_mult(q1, v1):
     q2 = (0.0,) + v1
     return q_mult(q_mult(q1, q2), q_conjugate(q1))[1:]
 
+def q_to_axisangle(q):
+    w, v = q[0], q[1:]
+    theta = math.acos(w) * 2.0
+    return normalize(v), math.degrees(theta)
+
+def axisangle_to_q(v, theta):
+    v = normalize(v)
+    x, y, z = v
+    theta /= 2
+    w = math.cos(theta)
+    x = x * math.sin(theta)
+    y = y * math.sin(theta)
+    z = z * math.sin(theta)
+    return w, x, y, z
 
 def callback(data):
 	global pos_list
@@ -130,6 +151,41 @@ if __name__ == '__main__':
 				platform_cam = calibration + platform_centre # Platform centre pos relative to Camera
 				platform = platform_cam - cam_to_lead # Platform centre pos relative to Lead Screw
 				print(platform)
+		elif destination_input == 'endeffectorrotation':
+			while True:
+				try:
+					waypoint_listener()
+					end_effector = np.array(end_effector_list)
+					end_effector = np.mean(end_effector,axis=0)
+					effector_rot = np.array(effector_rot_list)
+					effector_rot = np.mean(effector_rot,axis=0)
+					euler = q_to_axisangle(effector_rot)
+					print(euler)
+				except KeyboardInterrupt:
+					break
+				except IndexError:
+					break
+		elif destination_input == 'winchoffset':
+			while True:
+				try:
+					waypoint_listener()
+					end_effector = np.array(end_effector_list)
+					end_effector = np.mean(end_effector,axis=0)
+					effector_rot = np.array(effector_rot_list)
+					effector_rot = np.mean(effector_rot,axis=0)
+					winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
+					winch1_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
+					winch2_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+					print('Winch0 Offset: '+str(winch0_offset))
+					print('Winch1 Offset: '+str(winch1_offset))
+					print('Winch2 Offset: '+str(winch2_offset))
+					time.sleep(0.5)
+				except KeyboardInterrupt:
+					break
+				except IndexError:
+					break
+				except TypeError:
+					break
 		elif destination_input == 'listen':
 			while True:
 				try:

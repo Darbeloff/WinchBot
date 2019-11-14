@@ -727,7 +727,7 @@ def pickup():
 				hook_offset = [goal_pos[0]+x_offset-hook_cam[0],goal_pos[1]+y_offset-hook_cam[1], goal_pos[2]+z_offset-(hook_cam[2]-6)]
 				print('hook_offset:')
 				print(hook_offset)
-				if abs(hook_offset[0])>1:
+				if abs(hook_offset[0])>0.5:
 					increment = 2
 					#hook_offset = [hook_offset[0],hook_offset[1]]
 					#print('hook_offset:')
