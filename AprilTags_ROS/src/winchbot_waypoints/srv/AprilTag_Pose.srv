@@ -1,0 +1,13 @@
+# Service which takes in:
+#
+# tf_topic : name of /tf topic with AprilTag transform
+#
+# and returns:
+#
+# position : the pose of the tag in the camera frame in inches
+# quaternion : the quaternion of the tag
+
+string tf_topic
+---
+float32[] position
+float32[] quaternion

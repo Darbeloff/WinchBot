@@ -11,6 +11,8 @@ rospkg = "*"
 numpy = "*"
 numpy-quaternion = "*"
 matplotlib = "*"
+empy = "*"
+roslibpy = "*"
 
 [requires]
 python_version = "3.5"

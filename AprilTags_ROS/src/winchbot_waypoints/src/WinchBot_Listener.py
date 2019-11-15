@@ -173,9 +173,10 @@ if __name__ == '__main__':
 					end_effector = np.mean(end_effector,axis=0)
 					effector_rot = np.array(effector_rot_list)
 					effector_rot = np.mean(effector_rot,axis=0)
+					# Note: Winch locations must be given in the AprilTag coordinate frame:
 					winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
-					winch1_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
-					winch2_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+					winch1_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+					winch2_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
 					print('Winch0 Offset: '+str(winch0_offset))
 					print('Winch1 Offset: '+str(winch1_offset))
 					print('Winch2 Offset: '+str(winch2_offset))

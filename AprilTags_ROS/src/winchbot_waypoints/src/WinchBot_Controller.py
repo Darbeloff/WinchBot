@@ -49,12 +49,16 @@ def callback(data):
 	tf = tf_stamped.transform
 	tag = tf_stamped.child_frame_id
 	if tag == "tag_0":
-		pos_list.append([tf.translation.x,tf.translation.y,tf.translation.z])
-		pos_rot_list.append([tf.rotation.w,tf.rotation.x, tf.rotation.y, tf.rotation.z])
+		#pos_list.append([tf.translation.x,tf.translation.y,tf.translation.z])
+		#pos_rot_list.append([tf.rotation.w,tf.rotation.x, tf.rotation.y, tf.rotation.z])
 		#pos_rot = tf.transformations.euler_from_quaternion(tf.rotation)
+		pos_list = [tf.translation.x,tf.translation.y,tf.translation.z]
+		pos_rot_list = [tf.rotation.w,tf.rotation.x, tf.rotation.y, tf.rotation.z]
 	elif tag == "tag_1":
-		end_effector_list.append([tf.translation.x, tf.translation.y, tf.translation.z])
-		effector_rot_list.append([tf.rotation.w,tf.rotation.x, tf.rotation.y, tf.rotation.z])
+		#end_effector_list.append([tf.translation.x, tf.translation.y, tf.translation.z])
+		#effector_rot_list.append([tf.rotation.w,tf.rotation.x, tf.rotation.y, tf.rotation.z])
+		end_effector_list = [tf.translation.x, tf.translation.y, tf.translation.z]
+		effector_rot_list = [tf.rotation.w,tf.rotation.x, tf.rotation.y, tf.rotation.z]
 		#effector_rot = tf.transformations.euler_from_quaternion(tf.rotation)
 
 	#print(pos) '''print statements for debugging'''
@@ -73,8 +77,9 @@ def waypoint_listener():
 	rospy.init_node('waypoint_listener',anonymous=True)
 	rospy.Subscriber("/tf",TFMessage,callback)
 	print("Listening...")
-	for i in range(5):
-		rospy.rostime.wallsleep(0.5)
+	time.sleep(1) # Give a moment to initialize
+	#for i in range(5):
+	#	rospy.rostime.wallsleep(0.5)
 
 def odrive_move(drive,axis,delta):
 	'''moves the selected odrive by using position control, changes encoder value by delta'''
@@ -247,11 +252,11 @@ def tumble():
 	global platform
 	global qi
 	time.sleep(5)
-	waypoint_listener()
+	#waypoint_listener()
 	end_effector = np.array(end_effector_list)
-	end_effector = np.mean(end_effector,axis=0)
+	#end_effector = np.mean(end_effector,axis=0)
 	effector_rot = np.array(effector_rot_list)
-	effector_rot = np.mean(effector_rot,axis=0)
+	#effector_rot = np.mean(effector_rot,axis=0)
 	##pos = np.array(pos_list)
 	##pos = np.mean(pos,axis=0)
 	##pos_rot = np.array(pos_rot_list)
@@ -292,9 +297,10 @@ def tumble():
 	winch0 = winches[0]
 	winch1 = winches[1]
 	winch2 = winches[2]
+	# Winch coordinates given in AprilTag coordinate frame
 	winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
-	winch1_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
-	winch2_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+	winch1_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+	winch2_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
 	qi[0] = math.sqrt((N0 - winch0[0]+winch0_offset[0])**2 + (N1-winch0[1]+winch0_offset[1])**2 + (N2-winch0[2]-winch0_offset[2])**2)
 	qi[1] = math.sqrt((N0 - winch1[0]+winch1_offset[0])**2 + (N1-winch1[1]+winch1_offset[1])**2 + (N2-winch1[2]+winch1_offset[2])**2)
 	qi[2] = math.sqrt((N0 - winch2[0]+winch2_offset[0])**2 + (N1-winch2[1]+winch2_offset[1])**2 + (N2-winch2[2]+winch2_offset[2])**2)
@@ -436,16 +442,17 @@ def pickup():
 	global end_effector
 	global platform
 	global qi
-	time.sleep(5)
-	waypoint_listener()
+	n = 5 # sleep time
+	time.sleep(n)
+	#waypoint_listener()
 	end_effector = np.array(end_effector_list)
-	end_effector = np.mean(end_effector,axis=0)
+	#end_effector = np.mean(end_effector,axis=0)
 	effector_rot = np.array(effector_rot_list)
-	effector_rot = np.mean(effector_rot,axis=0)
+	#effector_rot = np.mean(effector_rot,axis=0)
 	pos = np.array(pos_list)
-	pos = np.mean(pos,axis=0)
+	#pos = np.mean(pos,axis=0)
 	pos_rot = np.array(pos_rot_list)
-	pos_rot = np.mean(pos_rot,axis=0)
+	#pos_rot = np.mean(pos_rot,axis=0)
 	print(pos_rot)
 	#print(pos)
 	#print(pos_rot)
@@ -477,9 +484,10 @@ def pickup():
 	winch0 = winches[0]
 	winch1 = winches[1]
 	winch2 = winches[2]
+	# Winch coordinates given in AprilTag coordinate frame
 	winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
-	winch1_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
-	winch2_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+	winch1_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+	winch2_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
 	qi[0] = math.sqrt((N0 - winch0[0]+winch0_offset[0])**2 + (N1-winch0[1]+winch0_offset[1])**2 + (N2-winch0[2]-winch0_offset[2])**2)
 	qi[1] = math.sqrt((N0 - winch1[0]+winch1_offset[0])**2 + (N1-winch1[1]+winch1_offset[1])**2 + (N2-winch1[2]+winch1_offset[2])**2)
 	qi[2] = math.sqrt((N0 - winch2[0]+winch2_offset[0])**2 + (N1-winch2[1]+winch2_offset[1])**2 + (N2-winch2[2]+winch2_offset[2])**2)
@@ -492,7 +500,7 @@ def pickup():
 	drum_diam = 4.125 # Drum diameter in inches
 	safe_z = 35 # safe Z coordinate for translation over the object
 	x_offset = 0.25 # additional offset in x direction
-	y_offset = -4.5 # offset in y direction between target hook centre and initial y location while aligning x.
+	y_offset = -5 # offset in y direction between target hook centre and initial y location while aligning x.
 	#y_offset2 = 0.5
 	y_offset2 = 4.5 # undoes the affect of y_offset and moves effector hook under target hook
 	z_offset = -3.5
@@ -531,22 +539,22 @@ def pickup():
 			odrive_move(all_drives[1],0,de[1])
 			odrive_move(all_drives[1],1,de[2])
 			print("Moving...")
-			time.sleep(5)
+			time.sleep(n)
 			platform = target
 			print("Stage "+str(stage)+" complete.")
 			stage+=1
 		if stage == 2:
 			end_effector = 'none'
-			time.sleep(5)
-			waypoint_listener()
+			time.sleep(n)
+			#waypoint_listener()
 			end_effector = np.array(end_effector_list)
-			end_effector = np.mean(end_effector,axis=0)
+			#end_effector = np.mean(end_effector,axis=0)
 			effector_rot = np.array(effector_rot_list)
-			effector_rot = np.mean(effector_rot,axis=0)
+			#effector_rot = np.mean(effector_rot,axis=0)
 			pos = np.array(pos_list)
-			pos = np.mean(pos,axis=0)
+			#pos = np.mean(pos,axis=0)
 			pos_rot = np.array(pos_rot_list)
-			pos_rot = np.mean(pos_rot,axis=0)
+			#pos_rot = np.mean(pos_rot,axis=0)
 			goal_pos_temp = goal_pos
 			'''if end_effector == 'none':
 				print('Failed to detect end effector!')
@@ -589,9 +597,10 @@ def pickup():
 				winch0 = winches[0]
 				winch1 = winches[1]
 				winch2 = winches[2]
+				# Winch coordinates given in AprilTag coordinate frame
 				winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
-				winch1_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
-				winch2_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+				winch1_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+				winch2_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
 				qi[0] = math.sqrt((N0 - winch0[0]+winch0_offset[0])**2 + (N1-winch0[1]+winch0_offset[1])**2 + (N2-winch0[2]-winch0_offset[2])**2)
 				qi[1] = math.sqrt((N0 - winch1[0]+winch1_offset[0])**2 + (N1-winch1[1]+winch1_offset[1])**2 + (N2-winch1[2]+winch1_offset[2])**2)
 				qi[2] = math.sqrt((N0 - winch2[0]+winch2_offset[0])**2 + (N1-winch2[1]+winch2_offset[1])**2 + (N2-winch2[2]+winch2_offset[2])**2)
@@ -617,7 +626,7 @@ def pickup():
 				odrive_move(all_drives[1],0,de[1])
 				odrive_move(all_drives[1],1,de[2])
 				print("Moving...")
-				time.sleep(5)
+				time.sleep(n)
 				platform = target
 				stage=increment
 				# Look for residual error
@@ -650,7 +659,7 @@ def pickup():
 			odrive_move(all_drives[1],0,de[1])
 			odrive_move(all_drives[1],1,de[2])
 			print("Moving...")
-			time.sleep(5)
+			time.sleep(n)
 			platform = target
 			print("Stage "+str(stage)+" complete.")
 			stage+=1
@@ -672,7 +681,7 @@ def pickup():
 			odrive_move(all_drives[1],0,de[1])
 			odrive_move(all_drives[1],1,de[2])
 			print("Moving...")
-			time.sleep(5)
+			time.sleep(n)
 			platform = target
 			print("Stage "+str(stage)+" complete.")
 			stage+=1
@@ -694,7 +703,7 @@ def pickup():
 			odrive_move(all_drives[1],0,de[1])
 			odrive_move(all_drives[1],1,de[2])
 			print("Moving...")
-			time.sleep(5)
+			time.sleep(n)
 			platform = target
 			print("Stage "+str(stage)+" complete.")
 			stage+=1
@@ -746,11 +755,20 @@ if __name__ == '__main__':
 
 	# Begin listening for AprilTag location
 	pos = None
+	pos_list = []
+	pos_rot_list = []
+	end_effector_list = []
+	effector_rot_list = []
+	'''rospy.init_node('waypoint_listener',anonymous=True)
+	rospy.Subscriber("/tf",TFMessage,callback)
+	print("Listening...")'''
+	#for i in range(5):
+	#	rospy.rostime.wallsleep(0.5)
 	waypoint_listener()
 	end_effector = np.array(end_effector_list)
-	end_effector = np.mean(end_effector,axis=0)
+	#end_effector = np.mean(end_effector,axis=0)
 	effector_rot = np.array(effector_rot_list)
-	effector_rot = np.mean(effector_rot,axis=0)
+	#effector_rot = np.mean(effector_rot,axis=0)
 	#pos = np.array(pos_list)
 	#pos = np.mean(pos,axis=0)
 	#pos_rot = np.array(pos_rot)
@@ -784,9 +802,10 @@ if __name__ == '__main__':
 	winch0 = winches[0]
 	winch1 = winches[1]
 	winch2 = winches[2]
+	# Winch coordinates given in AprilTag coordinate frame
 	winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
-	winch1_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
-	winch2_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+	winch1_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
+	winch2_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
 	qi[0] = math.sqrt((N0 - winch0[0]+winch0_offset[0])**2 + (N1-winch0[1]+winch0_offset[1])**2 + (N2-winch0[2]-winch0_offset[2])**2)
 	qi[1] = math.sqrt((N0 - winch1[0]+winch1_offset[0])**2 + (N1-winch1[1]+winch1_offset[1])**2 + (N2-winch1[2]+winch1_offset[2])**2)
 	qi[2] = math.sqrt((N0 - winch2[0]+winch2_offset[0])**2 + (N1-winch2[1]+winch2_offset[1])**2 + (N2-winch2[2]+winch2_offset[2])**2)
