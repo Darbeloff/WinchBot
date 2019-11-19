@@ -38,6 +38,29 @@ def qv_mult(q1, v1):
     q2 = (0.0,) + v1
     return q_mult(q_mult(q1, q2), q_conjugate(q1))[1:]
 
+def waitforsway():
+	max_sway = 0.2
+	timeout = 1
+	wait_start = time.time()
+	sway_x = np.array([])
+	sway_y = np.array([])
+	sway_z = np.array([])
+	while True:
+		timeout_start = time.time()
+		while time.time() < timeout_start + timeout:
+			sway_x = np.append(sway_x,end_effector_list[0]*39.3701)
+			sway_y = np.append(sway_y,end_effector_list[1]*39.3701)
+			sway_z = np.append(sway_z,end_effector_list[2]*39.3701)
+		if np.ptp(sway_x)<max_sway and np.ptp(sway_y)<max_sway:
+			break
+		else:
+			sway_x = []
+			sway_y = []
+			sway_z = []
+	elapsed_time = time.time() - wait_start
+	print("Time waited for sway:")
+	print(elapsed_time)
+
 
 def callback(data):
 	global pos_list
@@ -109,9 +132,9 @@ def winchbot_IK(winches,platform):
 	winch0 = winches[0]
 	winch1 = winches[1]
 	winch2 = winches[2]
-	q[0] = math.sqrt((N0 - winch0[0])**2 + (N1-winch0[1]+1)**2 + (N2-winch0[2])**2)
-	q[1] = math.sqrt((N0 - winch1[0]-0.866)**2 + (N1-winch1[1]-0.5)**2 + (N2-winch1[2])**2)
-	q[2] = math.sqrt((N0 - winch2[0]+0.866)**2 + (N1-winch2[1]-0.5)**2 + (N2-winch2[2])**2)
+	q[0] = math.sqrt((N0 - winch0[0]+platform_cable[0][0])**2 + (N1-winch0[1]+platform_cable[0][1])**2 + (N2-winch0[2]+platform_cable[0][2])**2)
+	q[1] = math.sqrt((N0 - winch1[0]+platform_cable[1][0])**2 + (N1-winch1[1]+platform_cable[1][1])**2 + (N2-winch1[2]+platform_cable[1][2])**2)
+	q[2] = math.sqrt((N0 - winch2[0]+platform_cable[2][0])**2 + (N1-winch2[1]+platform_cable[2][1])**2 + (N2-winch2[2]+platform_cable[2][2])**2)
 	return q
 
 def figureeight():
@@ -298,9 +321,9 @@ def tumble():
 	winch1 = winches[1]
 	winch2 = winches[2]
 	# Winch coordinates given in AprilTag coordinate frame
-	winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
-	winch1_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
-	winch2_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
+	winch0_offset = np.array((qv_mult(tuple(effector_rot),tuple(platform_cable[0]))))
+	winch1_offset = np.array((qv_mult(tuple(effector_rot),tuple(platform_cable[1]))))
+	winch2_offset = np.array((qv_mult(tuple(effector_rot),tuple(platform_cable[2]))))
 	qi[0] = math.sqrt((N0 - winch0[0]+winch0_offset[0])**2 + (N1-winch0[1]+winch0_offset[1])**2 + (N2-winch0[2]-winch0_offset[2])**2)
 	qi[1] = math.sqrt((N0 - winch1[0]+winch1_offset[0])**2 + (N1-winch1[1]+winch1_offset[1])**2 + (N2-winch1[2]+winch1_offset[2])**2)
 	qi[2] = math.sqrt((N0 - winch2[0]+winch2_offset[0])**2 + (N1-winch2[1]+winch2_offset[1])**2 + (N2-winch2[2]+winch2_offset[2])**2)
@@ -443,7 +466,8 @@ def pickup():
 	global platform
 	global qi
 	n = 5 # sleep time
-	time.sleep(n)
+	#time.sleep(n)
+	waitforsway()
 	#waypoint_listener()
 	end_effector = np.array(end_effector_list)
 	#end_effector = np.mean(end_effector,axis=0)
@@ -485,9 +509,9 @@ def pickup():
 	winch1 = winches[1]
 	winch2 = winches[2]
 	# Winch coordinates given in AprilTag coordinate frame
-	winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
-	winch1_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
-	winch2_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
+	winch0_offset = np.array((qv_mult(tuple(effector_rot),tuple(platform_cable[0]))))
+	winch1_offset = np.array((qv_mult(tuple(effector_rot),tuple(platform_cable[1]))))
+	winch2_offset = np.array((qv_mult(tuple(effector_rot),tuple(platform_cable[2]))))
 	qi[0] = math.sqrt((N0 - winch0[0]+winch0_offset[0])**2 + (N1-winch0[1]+winch0_offset[1])**2 + (N2-winch0[2]-winch0_offset[2])**2)
 	qi[1] = math.sqrt((N0 - winch1[0]+winch1_offset[0])**2 + (N1-winch1[1]+winch1_offset[1])**2 + (N2-winch1[2]+winch1_offset[2])**2)
 	qi[2] = math.sqrt((N0 - winch2[0]+winch2_offset[0])**2 + (N1-winch2[1]+winch2_offset[1])**2 + (N2-winch2[2]+winch2_offset[2])**2)
@@ -521,7 +545,8 @@ def pickup():
 			odrive_move(all_drives[1],0,de[1])
 			odrive_move(all_drives[1],1,de[2])
 			print("Moving...")
-			time.sleep(5)
+			#time.sleep(5)
+			waitforsway()
 			platform = target
 			print("Stage "+str(stage)+" complete.")
 			stage+=1
@@ -539,13 +564,15 @@ def pickup():
 			odrive_move(all_drives[1],0,de[1])
 			odrive_move(all_drives[1],1,de[2])
 			print("Moving...")
-			time.sleep(n)
+			#time.sleep(n)
+			waitforsway()
 			platform = target
 			print("Stage "+str(stage)+" complete.")
 			stage+=1
 		if stage == 2:
 			end_effector = 'none'
-			time.sleep(n)
+			#time.sleep(n)
+			waitforsway()
 			#waypoint_listener()
 			end_effector = np.array(end_effector_list)
 			#end_effector = np.mean(end_effector,axis=0)
@@ -598,9 +625,9 @@ def pickup():
 				winch1 = winches[1]
 				winch2 = winches[2]
 				# Winch coordinates given in AprilTag coordinate frame
-				winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
-				winch1_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
-				winch2_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
+				winch0_offset = np.array((qv_mult(tuple(effector_rot),tuple(platform_cable[0]))))
+				winch1_offset = np.array((qv_mult(tuple(effector_rot),tuple(platform_cable[1]))))
+				winch2_offset = np.array((qv_mult(tuple(effector_rot),tuple(platform_cable[2]))))
 				qi[0] = math.sqrt((N0 - winch0[0]+winch0_offset[0])**2 + (N1-winch0[1]+winch0_offset[1])**2 + (N2-winch0[2]-winch0_offset[2])**2)
 				qi[1] = math.sqrt((N0 - winch1[0]+winch1_offset[0])**2 + (N1-winch1[1]+winch1_offset[1])**2 + (N2-winch1[2]+winch1_offset[2])**2)
 				qi[2] = math.sqrt((N0 - winch2[0]+winch2_offset[0])**2 + (N1-winch2[1]+winch2_offset[1])**2 + (N2-winch2[2]+winch2_offset[2])**2)
@@ -626,7 +653,8 @@ def pickup():
 				odrive_move(all_drives[1],0,de[1])
 				odrive_move(all_drives[1],1,de[2])
 				print("Moving...")
-				time.sleep(n)
+				#time.sleep(n)
+				waitforsway()
 				platform = target
 				stage=increment
 				# Look for residual error
@@ -659,7 +687,8 @@ def pickup():
 			odrive_move(all_drives[1],0,de[1])
 			odrive_move(all_drives[1],1,de[2])
 			print("Moving...")
-			time.sleep(n)
+			#time.sleep(n)
+			waitforsway()
 			platform = target
 			print("Stage "+str(stage)+" complete.")
 			stage+=1
@@ -681,7 +710,8 @@ def pickup():
 			odrive_move(all_drives[1],0,de[1])
 			odrive_move(all_drives[1],1,de[2])
 			print("Moving...")
-			time.sleep(n)
+			#time.sleep(n)
+			waitforsway()
 			platform = target
 			print("Stage "+str(stage)+" complete.")
 			stage+=1
@@ -703,7 +733,8 @@ def pickup():
 			odrive_move(all_drives[1],0,de[1])
 			odrive_move(all_drives[1],1,de[2])
 			print("Moving...")
-			time.sleep(n)
+			#time.sleep(n)
+			waitforsway()
 			platform = target
 			print("Stage "+str(stage)+" complete.")
 			stage+=1
@@ -715,6 +746,9 @@ def pickup():
 
 if __name__ == '__main__':
 	global qi
+	global platform_cable
+	#platform_cable = [[0,1,0],[-0.866,-0.5,0],[0.866,-0.5,0]] # locations of cables connecting to the medium platform
+	platform_cable = [[0,2,0],[-1.732,-1,0],[1.732,-1,0]] # locations of cables connecting to the large platform
 # Find a connected ODrive (this will block until you connect one)
 	print("finding an odrive...")
 	odrv0 = odrive.find_any(serial_number="2061377C3548")
@@ -803,9 +837,9 @@ if __name__ == '__main__':
 	winch1 = winches[1]
 	winch2 = winches[2]
 	# Winch coordinates given in AprilTag coordinate frame
-	winch0_offset = np.array((qv_mult(tuple(effector_rot),(0,1,0))))
-	winch1_offset = np.array((qv_mult(tuple(effector_rot),(0.866,-0.5,0))))
-	winch2_offset = np.array((qv_mult(tuple(effector_rot),(-0.866,-0.5,0))))
+	winch0_offset = np.array((qv_mult(tuple(effector_rot),tuple(platform_cable[0]))))
+	winch1_offset = np.array((qv_mult(tuple(effector_rot),tuple(platform_cable[1]))))
+	winch2_offset = np.array((qv_mult(tuple(effector_rot),tuple(platform_cable[2]))))
 	qi[0] = math.sqrt((N0 - winch0[0]+winch0_offset[0])**2 + (N1-winch0[1]+winch0_offset[1])**2 + (N2-winch0[2]-winch0_offset[2])**2)
 	qi[1] = math.sqrt((N0 - winch1[0]+winch1_offset[0])**2 + (N1-winch1[1]+winch1_offset[1])**2 + (N2-winch1[2]+winch1_offset[2])**2)
 	qi[2] = math.sqrt((N0 - winch2[0]+winch2_offset[0])**2 + (N1-winch2[1]+winch2_offset[1])**2 + (N2-winch2[2]+winch2_offset[2])**2)
